@@ -34,10 +34,12 @@
         label: function() {
            var config = RED.nodes.node(this.firebaseConfig);
            var childpath = (this.childpath.indexOf("/") == 0) ? this.childpath : "/" + this.childpath;
-           childpath = childpath.substr(-1) == "/" ? childpath.slice(0,-1) : childpath
+		   childpath = childpath.substr(-1) == "/" ? childpath.slice(0,-1) : childpath
            return this.name ||
-                  (config ? "https://"+config.firebaseurl+".firebaseio.com"+(childpath||"") + ".push(\""+this.eventType+"\")" : childpath + ".push(\""+this.eventType+"\")") ||
-                  "firebase.push(\""+this.eventType+"\")";
+                  (config ? "https://"+config.databaseUrl+".firebaseio.com"+(childpath||"") + ".push()" : childpath + ".push()") ||
+                  "firebase.push()";
+                  //(config ? "https://"+config.databaseUrl+".firebaseio.com"+(childpath||"") + ".push(\""+this.eventType+"\")" : childpath + ".push(\""+this.eventType+"\")") ||
+                  //"firebase.push(\""+this.eventType+"\")";
         },
         labelStyle: function() {
             return this.name?'node_label_italic':'';

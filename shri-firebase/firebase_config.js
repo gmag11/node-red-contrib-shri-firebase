@@ -32,6 +32,7 @@ module.exports = function (RED) {
             on: function (a, b) { _emitter.on(a, b); },
             once: function (a, b) { _emitter.once(a, b); },
           };
+		  
           return mainApp;
         }
       },
@@ -42,8 +43,11 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, n);
 
     this.databaseUrl = "https://" + n.databaseUrl + ".firebaseio.com";
-    this.authDomain = "https://" + n.authDomain + ".firebaseapp.com";
+    this.authDomain = n.authDomain + ".firebaseapp.com";
     this.email = n.email;
+	this.projectId = n.authDomain;
+	this.storageBucket = n.authDomain + ".appspot.com";
+	this.senderId = n.senderId;
     this.password = n.password;
     this.apiKey = n.apiKey;
 
@@ -51,17 +55,28 @@ module.exports = function (RED) {
       var config = {
         apiKey: this.apiKey,
         authDomain: this.authDomain,
-        databaseURL: this.databaseUrl
+        databaseURL: this.databaseUrl,
+		projectId: this.projectId,
+		storageBucket: this.storageBucket,
+		messagingSenderId: this.senderId
       };
       
       //Shrikant
-      /*
-      this.auth = firebase.auth();
-      this.auth.onAuthStateChanged(this.onAuthStateChanged.bind(this));
-      this.auth.signInWithEmailAndPassword(this.email,this.password);
-      */
+      
+      
 
       this.fbConfig = connectionPool.get(config, this.id);
+	  
+      this.auth = this.fbConfig.fbApp.auth();
+      //this.auth.onAuthStateChanged(this.onAuthStateChanged.bind(this));
+	  
+      this.auth.signInWithEmailAndPassword(this.email,this.password).catch(function(error) {
+	    // Handle Errors here.
+	    var errorCode = error.code;
+	    var errorMessage = error.message;
+	    // ...
+	  });
+
     } else {
       this.log('Firebase Not configured!!');
     }
